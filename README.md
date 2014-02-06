@@ -3,8 +3,9 @@ Lab 1 - Video Synchronization
 
 ### Introduction
 
-The purpose of this laboratory exercise was to write a video controller for use with an FPGA. The FPGA was programmed using VHDL code to interface with monitor display via a VGA-to-HDMI cable.
+The purpose of this laboratory exercise was to write a video controller for use with an FPGA. The FPGA was programmed using VHDL code to interface with monitor display via a VGA-to-HDMI cable. The primary goal of this lab was to display a given test pattern on a monitor. In addition, for A functionality, the goal was to also display different test patterns that corresponded to input from two separate switches on the FPGA. The desired test pattern can be seen below.
 
+![alt text](http://ece383.com/labs/lab1/figure3.jpg "Basic Test Pattern")
 
 ### Implementation
 
@@ -62,7 +63,7 @@ entity h_sync_gen is
            column : out  unsigned(10 downto 0));
 end h_sync_gen;
 ```
-The code below shows the counter required to know the location of the horizonal signal and when to reset back to zero:
+ * The code below shows the counter required to know the location of the horizonal signal and when to reset back to zero:
 
 ```vhdl
 	count_next <= count + 1;
