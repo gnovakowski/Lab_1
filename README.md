@@ -5,7 +5,7 @@ Lab 1 - Video Synchronization
 
 The purpose of this laboratory exercise was to write a video controller for use with an FPGA. The FPGA was programmed using VHDL code to interface with monitor display via a VGA-to-HDMI cable. The primary goal of this lab was to display a given test pattern on a monitor. In addition, for A functionality, the goal was to also display different test patterns that corresponded to input from two separate switches on the FPGA. The desired test pattern can be seen below.
 
-![alt text](http://ece383.com/labs/lab1/figure3.jpg "Basic Test Pattern")
+![alt text](http://i.imgur.com/BTZaoeB.png "Basic Test Pattern")
 
 ### Implementation
 
@@ -44,6 +44,7 @@ The modules that I wrote for this lab are listed below complete with examples an
 	);
 ```
 
+
  * `h_sync_gen` - This VHDL module generates the horizontal signal to be displayed on the monitor. The goal of this module is to generate an unsigned number for the column so that the pixel generator will know where to write a pixel. The code consists of generics (containing the sizes of the different states), a counter to determine the location of the horizontal signal, and a series of outputs explaining the state of the different signals to be used in `v_sync_gen` and `vga_sync`. The entity declaration (with generics) can be seen in the code below:
 
 ```vhdl
@@ -81,6 +82,7 @@ end h_sync_gen;
 	end process;
 ```
 
+
  * `v_sync_gen` - This VHDL module behaves in a very similar way to `h_sync_gen` except that it applies to the vertical aspect of the monitor display. The goal of this module is to generate an unsigned number for the row so that the pixel generator will know where to write a pixel. The code consists of generics (containing the sizes of the different states), a counter to determine the location of the vertical signal, and a series of outputs explaining the state of the different signals to be used in `vga_sync`. The entity declaration (with generics) can be seen in the code below:
 
 ```vhdl
@@ -102,6 +104,7 @@ entity v_sync_gen is
            row : out  unsigned(10 downto 0));
 end v_sync_gen;
 ```
+
 
  * `vga_sync` - The purpose of this VHDL module is to connect the `v_sync_gen` and `h_sync_gen` modules so that they work together, and to generate a blank signal for use with the pixel generator. The architecture of the vertical and horizontal sync connections can be seen in the code below:
 
@@ -143,7 +146,55 @@ begin
 end Behavioral;
 ```
 
- * `pixel_gen` - This VHDL module is the pixel generator, which is the file that actually writes pixels to the monitor display, using signals and generics initialized in the earlier VHDL modules. 
+
+ * `pixel_gen` - This VHDL module is the pixel generator, which is the file that actually writes pixels to the monitor display, using signals and generics initialized in the earlier VHDL modules. Part of the process for drawing a design on the display (with input from two switches on the FPGA) can be seen below:
+
+```vhdl
+	process(row, column, blank, SW0, SW1) is
+		begin
+			if(blank = '1') then
+				r <= (others => '0');
+				g <= (others => '0');
+				b <= (others => '0');
+				
+			elsif (SW0 = '0' and SW1 = '0') then
+				if (row > 360) then
+					r <= (others => '1');
+					g <= (others => '1');
+					b <= (others => '0');
+				elsif (column < 200) then
+					r <= (others => '1');
+					g <= (others => '0');
+					b <= (others => '0');
+				elsif (column > 440) then
+					r <= (others => '0');
+					g <= (others => '0');
+					b <= (others => '1');
+				else
+					r <= (others => '0');
+					g <= (others => '1');
+					b <= (others => '0');
+				end if;
+			
+			elsif (SW0 = '0' and SW1 = '1') then
+				if (row > 360) then
+					r <= (others => '1');
+					g <= (others => '1');
+					b <= (others => '0');
+				elsif (column < 200) then
+					r <= (others => '1');
+					g <= (others => '0');
+					b <= (others => '1');
+				elsif (column > 440) then
+					r <= (others => '0');
+					g <= (others => '1');
+					b <= (others => '1');
+				else
+					r <= (others => '1');
+					g <= (others => '1');
+					b <= (others => '1');
+				end if;
+```
 
 
 ### Test/Debug
