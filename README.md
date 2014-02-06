@@ -3,7 +3,7 @@ Lab 1 - Video Synchronization
 
 ### Introduction
 
-The purpose of this laboratory exercise was to write a video controller for use with an FPGA. The FPGA was programmed using VHDL code to interface with a VGA-to-HDMI cable.
+The purpose of this laboratory exercise was to write a video controller for use with an FPGA. The FPGA was programmed using VHDL code to interface with monitor display via a VGA-to-HDMI cable.
 
 
 ### Implementation
@@ -43,7 +43,7 @@ The modules that I wrote for this lab are listed below complete with examples an
 	);
 ```
 
- * `h_sync_gen` - This VHDL module generates the horizontal signal to be displayed on the monitor. The code consists of generics (containing the sizes of the different states), a counter to determine the location of the horizontal signal, and a series of outputs explaining the state of the different signals to be used in `v_sync_gen` and `vga_sync`. The entity declaration (with generics) can be seen in the code below:
+ * `h_sync_gen` - This VHDL module generates the horizontal signal to be displayed on the monitor. The goal of this module is to generate an unsigned number for the column so that the pixel generator will know where to write a pixel. The code consists of generics (containing the sizes of the different states), a counter to determine the location of the horizontal signal, and a series of outputs explaining the state of the different signals to be used in `v_sync_gen` and `vga_sync`. The entity declaration (with generics) can be seen in the code below:
 
 ```vhdl
 entity h_sync_gen is
@@ -80,7 +80,7 @@ The code below shows the counter required to know the location of the horizonal 
 	end process;
 ```
 
- * `v_sync_gen` - This VHDL module behaves in a very similar way to `h_sync_gen` except that it applies to the vertical aspect of the monitor display. The code consists of generics (containing the sizes of the different states), a counter to determine the location of the vertical signal, and a series of outputs explaining the state of the different signals to be used in `vga_sync`. The entity declaration (with generics) can be seen in the code below:
+ * `v_sync_gen` - This VHDL module behaves in a very similar way to `h_sync_gen` except that it applies to the vertical aspect of the monitor display. The goal of this module is to generate an unsigned number for the row so that the pixel generator will know where to write a pixel. The code consists of generics (containing the sizes of the different states), a counter to determine the location of the vertical signal, and a series of outputs explaining the state of the different signals to be used in `vga_sync`. The entity declaration (with generics) can be seen in the code below:
 
 ```vhdl
 entity v_sync_gen is
@@ -102,8 +102,47 @@ entity v_sync_gen is
 end v_sync_gen;
 ```
 
- * `vga_sync` - 
- * `pixel_gen` - 
+ * `vga_sync` - The purpose of this VHDL module is to connect the `v_sync_gen` and `h_sync_gen` modules so that they work together, and to generate a blank signal for use with the pixel generator. The architecture of the vertical and horizontal sync connections can be seen in the code below:
+
+```vhdl
+architecture Behavioral of vga_sync is
+	signal h_complete_new, v_blank, h_blank : std_logic;
+begin
+	 h_sync_connect: entity work.h_sync_gen(behavioral)
+		generic map(active_size => 640, 
+						front_size => 16, 
+						sync_size => 96, 
+						back_size  => 48,	
+						total_size => 800)
+
+		PORT MAP (  clk => clk,
+						reset => reset,
+						h_sync => h_sync,
+						blank => h_blank,
+						completed => h_complete_new,
+						column => column ); 
+   
+	  v_sync_connect: entity work.v_sync_gen(behavioral)
+	    generic map(active_size => 480, 
+						 front_size => 10, 
+						 sync_size => 2, 
+						 back_size  => 33,	
+						 total_size => 525)
+						 
+	    PORT MAP (	 clk => clk,
+						 reset => reset,
+						 h_completed => h_complete_new,
+						 v_sync => v_sync,
+						 blank => v_blank,
+						 completed => v_completed,
+						 row => row );
+	  
+	  blank <= (h_blank or v_blank);
+
+end Behavioral;
+```
+
+ * `pixel_gen` - This VHDL module is the pixel generator, which is the file that actually writes pixels to the monitor display, using signals and generics initialized in the earlier VHDL modules. 
 
 
 ### Test/Debug
