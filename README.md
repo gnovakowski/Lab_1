@@ -1,4 +1,3 @@
-Lab_1
+Lab 1 - Video Synchronization
 =====
 
-VGA controller
