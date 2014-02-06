@@ -10,6 +10,10 @@ Implementation
 
 * 
 
+![alt text](http://i.imgur.com/TAYzB2g.png "RTL Schematic")
+
+
+
 
 Test/Debug
 
