@@ -13,6 +13,10 @@ The implementation of this lab consisted of having to write code for five separa
 
 ![alt text](http://i.imgur.com/TAYzB2g.png "RTL Schematic")
 
+In addition, the state diagram for `h_sync_gen` can be seen below:
+
+![alt text](http://i.imgur.com/1vy1Ikx.png "State Diagram")
+
 The modules that I wrote for this lab are listed below complete with examples and explanations:
 
  * `atlys_lab_video` - This file is the top level VHDL file that includes the instantiations of both the `vga_sync` and `pixel_gen` modules. The instantiations for each of these components can be seen below:
