@@ -213,5 +213,6 @@ Throughout the course of this lab, I experienced issues with each of my VHDL mod
 
 ### Conclusion
 
+Overall, though very challenging, I thought that this was a valuable lab. It was extremely frustrating, but it definitely succeeded in teaching me a lot about how to write better VHDL code. One of the biggest challenges was trying to write code that the machine could synthesize. A lot of what I knew about writing in java and C does not apply in VHDL, and vice versa. In addition, I would not personally change very much about this lab besides maybe adding a little bit more direction in terms of choosing which state machines to use for which applications.
 
  
